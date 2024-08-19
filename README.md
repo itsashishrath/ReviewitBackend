@@ -1,7 +1,7 @@
 # Mobile Reviewer
 
 This is a django backend for my previous idea of using LLM to summarize the youtube video caption. I wanted to keep this as separated bcz I have integrated static files
-and this can run with websites rather that CLI. Here is the link to simple CLI (https://github.com/itsashishrath/MobileReviewer)
+and this can run with websites rather that CLI. Here is the link to simple CLI (https://github.com/itsashishrath/MobileReviewer) and for editing the frontend you can go to this link (https://github.com/itsashishrath/)
 
 ## Table of Contents
 1. [Project Title and Description](#project-title-and-description)
@@ -60,6 +60,8 @@ Follow these steps to install and run the Mobile Reviewer project on your local 
     - Enter the name of the mobile in the searchbar
     - It will then fetch captions from the top 5 YouTube videos related to that phone model.
     - Using the LLM, it generates a detailed review with citations to the respective videos.
+
+![Screenshot 2024-08-19 192211](https://github.com/user-attachments/assets/d54e4d21-467f-4e81-b7fa-f10e9fa59aa6)
 
 
 Feel free to explore and modify the code to suit your needs. Contributions are welcome!
