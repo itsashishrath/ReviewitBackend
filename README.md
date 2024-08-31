@@ -1,7 +1,7 @@
 # Mobile Reviewer
 
 This is a django backend for my previous idea of using LLM to summarize the youtube video caption. I wanted to keep this as separated bcz I have integrated static files
-and this can run with websites rather that CLI. Here is the link to simple CLI (https://github.com/itsashishrath/MobileReviewer) and for editing the frontend you can go to this link (https://github.com/itsashishrath/)
+and this can run with websites rather that CLI. Here is the link to simple CLI (https://github.com/itsashishrath/MobileReviewer) and for editing the frontend you can go to this link (https://github.com/itsashishrath/reviewitFrontend)
 
 ## Table of Contents
 1. [Project Title and Description](#project-title-and-description)
