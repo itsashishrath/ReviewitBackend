@@ -11,7 +11,6 @@ import json
 
 @api_view(['GET'])
 def search_mobile_phones_view(request):
-    # Ignore the actual search query for now
     mobile_name = request.GET.get('query', '')
     print(mobile_name)
 
