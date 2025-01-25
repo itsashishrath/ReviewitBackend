@@ -109,7 +109,7 @@ The response should only be a json format in this format:
 {phone_review}
 """
 
-    GEMMA_API=os.getenv("GEMINISTUDIOKEY")
+    GEMMA_API=os.getenv("GEMINISTUDIOKEY2")
     genai.configure(api_key=GEMMA_API)
     model = genai.GenerativeModel('gemini-1.5-flash', 
                                   generation_config={"response_mime_type" : "application/json"}
