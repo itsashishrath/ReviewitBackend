@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: REVIEWITBACKEND
+    name: Reviewit
     buildCommand: "./build.sh"
     env: python
-    startCommand: "gunicorn REVIEWITBACKEND.wsgi:application"
+    startCommand: "gunicorn Reviewit.wsgi:application"
