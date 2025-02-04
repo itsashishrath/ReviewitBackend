@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: your_django_app_name
+    name: REVIEWITBACKEND
     buildCommand: "./build.sh"
     env: python
-    startCommand: "gunicorn your_django_app_name.wsgi:application"
+    startCommand: "gunicorn REVIEWITBACKEND.wsgi:application"
