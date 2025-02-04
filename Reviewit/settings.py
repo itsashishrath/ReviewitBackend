@@ -42,8 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'apiReview.apps.ApireviewConfig',
-    'shakespeare_translator'
+    'apiReview.apps.ApireviewConfig'
 ]
 
 MIDDLEWARE = [
