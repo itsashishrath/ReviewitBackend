@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,8 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-6b+oe1p3r%80_b9&)++s(u_lkqbvp79h)wi1a-ln483v(o8$g$'
-GEMINI_API_KEY = 'AIzaSyB-iHSLFONfDiIOwVOnzb5frSaPQxtZ6Ho'
-
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -91,11 +93,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "Reviewitdb",
-        "USER": "postgres",
-        "PASSWORD": "Ashish@123",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
 

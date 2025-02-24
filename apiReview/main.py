@@ -4,9 +4,12 @@ import google.generativeai as genai
 import os
 from .formatter import *
 import json
+from dotenv import load_dotenv
+load_dotenv()
+
 
 def get_youtube_video_urls(query, max_results=5):
-    api_key = os.getenv("GOOGLEAPIKEY")  # Replace with your actual API key
+    api_key = os.environ.get("GOOGLEAPIKEY")
     youtube = build('youtube', 'v3', developerKey=api_key)
 
     request = youtube.search().list(
@@ -109,7 +112,7 @@ The response should only be a json format in this format:
 {phone_review}
 """
 
-    GEMMA_API=os.getenv("GEMINISTUDIOKEY2")
+    GEMMA_API=os.environ.get("GEMINISTUDIOKEY")
     genai.configure(api_key=GEMMA_API)
     model = genai.GenerativeModel('gemini-1.5-flash', 
                                   generation_config={"response_mime_type" : "application/json"}
