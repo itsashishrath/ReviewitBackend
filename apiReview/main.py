@@ -39,13 +39,48 @@ def get_youtube_video_urls(query, max_results=5):
     return video_urls, video_info_list
 
 
-def get_captions(video_id, language_code='en'):
-    try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code])
-        captions = " ".join([entry['text'] for entry in transcript])
-        return captions
-    except Exception as e:
-        return f"An error occurred: {str(e)}"
+import time
+import random
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.formatters import TextFormatter
+
+def get_captions(video_id, language_code='en', max_retries=3):
+    # Configure headers to mimic a real browser
+    YouTubeTranscriptApi._httpx_client.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.youtube.com/watch?v=' + video_id,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+    })
+    
+    # Add retry logic with exponential backoff
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            # Get transcript with proper error handling for specific languages
+            try:
+                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code])
+            except Exception as lang_error:
+                # Fallback to auto-generated captions if specified language not available
+                if "Could not find" in str(lang_error):
+                    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            
+            # Format the transcript
+            formatter = TextFormatter()
+            formatted_transcript = formatter.format_transcript(transcript)
+            
+            return formatted_transcript
+            
+        except Exception as e:
+            retry_count += 1
+            if retry_count >= max_retries:
+                return f"Failed after {max_retries} attempts. Error: {str(e)}"
+            
+            # Exponential backoff with jitter
+            wait_time = (2 ** retry_count) + random.uniform(0, 1)
+            time.sleep(wait_time)
+    
+    return "Could not retrieve captions after multiple attempts."
 
 
 def review(phoneModel):
