@@ -7,7 +7,6 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-
 def get_youtube_video_urls(query, max_results=5):
     api_key = os.environ.get("GOOGLEAPIKEY")
     youtube = build('youtube', 'v3', developerKey=api_key)
@@ -38,41 +37,45 @@ def get_youtube_video_urls(query, max_results=5):
 
     return video_urls, video_info_list
 
-
-import time
+import os
 import random
+import time
+import json
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
+# Get the proxy list from the environment variable and convert JSON string to a dictionary
+proxies_env = os.getenv("PROXIES", {})  # Default to empty JSON if not set
+proxies_dict = json.loads(proxies_env)   # Convert to dictionary
+proxy_list = list(proxies_dict.values()) # Extract only the proxy URLs
+
 def get_captions(video_id, language_code='en', max_retries=3):
-    # Configure headers to mimic a real browser
-    YouTubeTranscriptApi._httpx_client.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.youtube.com/watch?v=' + video_id,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-    })
-    
-    # Add retry logic with exponential backoff
     retry_count = 0
+    
     while retry_count < max_retries:
+        # Select a random proxy for this attempt
+        selected_proxy = random.choice(proxy_list)
+        proxies = {"http": selected_proxy}
+
         try:
-            # Get transcript with proper error handling for specific languages
+            # Try fetching the transcript
             try:
-                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code])
+                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code], proxies=proxies)
             except Exception as lang_error:
-                # Fallback to auto-generated captions if specified language not available
+                # Fallback to auto-generated captions if the specific language isn't available
                 if "Could not find" in str(lang_error):
-                    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+                    transcript = YouTubeTranscriptApi.get_transcript(video_id, proxies=proxies)
             
             # Format the transcript
             formatter = TextFormatter()
             formatted_transcript = formatter.format_transcript(transcript)
             
             return formatted_transcript
-            
+        
         except Exception as e:
             retry_count += 1
+            print(f"Proxy {selected_proxy} failed. Retrying with a new proxy... ({retry_count}/{max_retries})")
+
             if retry_count >= max_retries:
                 return f"Failed after {max_retries} attempts. Error: {str(e)}"
             
@@ -81,7 +84,6 @@ def get_captions(video_id, language_code='en', max_retries=3):
             time.sleep(wait_time)
     
     return "Could not retrieve captions after multiple attempts."
-
 
 def review(phoneModel):
     # Example usage:
