@@ -11,7 +11,7 @@ load_dotenv()
 
 # Free proxy (Replace with a working one)
 proxies = {
-    "http": f"http://tfuysuxk:9mp578cf68wd@38.154.227.167:5868"
+    "http":"http://tfuysuxk:9mp578cf68wd@38.154.227.167:5868"
 }
 
 # Test if the proxy works
