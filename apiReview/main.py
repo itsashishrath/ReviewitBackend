@@ -45,7 +45,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
 # Get the proxy list from the environment variable and convert JSON string to a dictionary
-PROXY = os.getenv("PROXIES", "")  # Default to empty JSON if not set
+PROXY = os.getenv("PROXY", "")  # Default to empty JSON if not set
 
 def get_captions(video_id, language_code='en', max_retries=3):
     retry_count = 0
