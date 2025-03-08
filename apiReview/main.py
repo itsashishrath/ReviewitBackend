@@ -45,17 +45,17 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
 # Get the proxy list from the environment variable and convert JSON string to a dictionary
-proxies_env = os.getenv("PROXIES", {})  # Default to empty JSON if not set
-proxies_dict = json.loads(proxies_env)   # Convert to dictionary
-proxy_list = list(proxies_dict.values()) # Extract only the proxy URLs
+PROXY = os.getenv("PROXIES", "")  # Default to empty JSON if not set
 
 def get_captions(video_id, language_code='en', max_retries=3):
     retry_count = 0
     
     while retry_count < max_retries:
         # Select a random proxy for this attempt
-        selected_proxy = random.choice(proxy_list)
-        proxies = {"http": selected_proxy}
+        proxies={
+        "http": PROXY,
+        "https": PROXY
+        }
 
         try:
             # Try fetching the transcript
@@ -74,7 +74,6 @@ def get_captions(video_id, language_code='en', max_retries=3):
         
         except Exception as e:
             retry_count += 1
-            print(f"Proxy {selected_proxy} failed. Retrying with a new proxy... ({retry_count}/{max_retries})")
 
             if retry_count >= max_retries:
                 return f"Failed after {max_retries} attempts. Error: {str(e)}"
