@@ -4,9 +4,11 @@ import google.generativeai as genai
 import os
 from .formatter import *
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 def get_youtube_video_urls(query, max_results=5):
-    api_key = os.getenv("GOOGLEAPIKEY")  # Replace with your actual API key
+    api_key = os.environ.get("GOOGLEAPIKEY")
     youtube = build('youtube', 'v3', developerKey=api_key)
 
     request = youtube.search().list(
@@ -35,15 +37,52 @@ def get_youtube_video_urls(query, max_results=5):
 
     return video_urls, video_info_list
 
+import os
+import random
+import time
+import json
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.formatters import TextFormatter
 
-def get_captions(video_id, language_code='en'):
-    try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code])
-        captions = " ".join([entry['text'] for entry in transcript])
-        return captions
-    except Exception as e:
-        return f"An error occurred: {str(e)}"
+# Get the proxy list from the environment variable and convert JSON string to a dictionary
+PROXY = os.getenv("PROXY", "")  # Default to empty JSON if not set
 
+def get_captions(video_id, language_code='en', max_retries=3):
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        # Select a random proxy for this attempt
+        proxies={
+        "http": PROXY,
+        "https": PROXY
+        }
+
+        try:
+            # Try fetching the transcript
+            try:
+                transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language_code], proxies=proxies)
+            except Exception as lang_error:
+                # Fallback to auto-generated captions if the specific language isn't available
+                if "Could not find" in str(lang_error):
+                    transcript = YouTubeTranscriptApi.get_transcript(video_id, proxies=proxies)
+            
+            # Format the transcript
+            formatter = TextFormatter()
+            formatted_transcript = formatter.format_transcript(transcript)
+            
+            return formatted_transcript
+        
+        except Exception as e:
+            retry_count += 1
+
+            if retry_count >= max_retries:
+                return f"Failed after {max_retries} attempts. Error: {str(e)}"
+            
+            # Exponential backoff with jitter
+            wait_time = (2 ** retry_count) + random.uniform(0, 1)
+            time.sleep(wait_time)
+    
+    return "Could not retrieve captions after multiple attempts."
 
 def review(phoneModel):
     # Example usage:
@@ -109,7 +148,7 @@ The response should only be a json format in this format:
 {phone_review}
 """
 
-    GEMMA_API=os.getenv("GEMINISTUDIOKEY2")
+    GEMMA_API=os.environ.get("GEMINISTUDIOKEY")
     genai.configure(api_key=GEMMA_API)
     model = genai.GenerativeModel('gemini-1.5-flash', 
                                   generation_config={"response_mime_type" : "application/json"}
