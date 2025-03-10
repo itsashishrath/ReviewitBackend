@@ -93,8 +93,6 @@ def review(phoneModel):
     for url in video_urls:
         video_id = url.split('v=')[1]
         caption = get_captions(video_id, language_code='en')
-        print(caption)
-        print()
         captionsList.append(caption)
 
     
